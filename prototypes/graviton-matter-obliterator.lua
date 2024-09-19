@@ -1,0 +1,182 @@
+local hit_effects = require '__base__.prototypes.entity.hit-effects'
+local sounds = require '__base__.prototypes.entity.sounds'
+local se_path = '__space-exploration-graphics__/graphics/icons/'
+
+data:extend({
+  -- Recipe cat.
+  {
+    name = 'll-graviton-matter-obliterator',
+    type = 'recipe-category'
+  },
+  {
+    name = 'll-remote-artillery',
+    type = 'recipe',
+    category = 'll-graviton-matter-obliterator',
+    energy_required = 120,
+    ingredients = {
+      { type = 'item', name = 'll-matter-artillery-shell', amount = 1 },
+      { type = 'fluid', name = 'll-helium', amount = 500, maximum_temperature = -246 },
+    },
+    results = { { type = 'fluid', name = 'll-helium', amount = 490, temperature = -183 } },
+    subgroup = 'intermediate-product',
+    allow_decomposition = false,
+    always_show_made_in = false,
+    enabled = false,
+    hidden = false,
+    hide_from_player_crafting = true,
+  },
+  -- Entity
+  {
+    type = 'assembling-machine',
+    name = 'll-graviton-matter-obliterator',
+    minable = { mining_time = 0.5, result = 'll-graviton-matter-obliterator' },
+    icon = '__space-exploration-graphics__/graphics/icons/delivery-cannon.png',
+    icon_size = 64,
+    icon_mipmaps = 1,
+    order = 'a-a',
+    max_health = 1500,
+    flags = { 'placeable-neutral', 'placeable-player', 'player-creation' },
+    corpse = 'big-remnants',
+    dying_explosion = 'medium-explosion',
+    alert_icon_shift = util.by_pixel(0, -12),
+    collision_box = { { -3.2, -3.2 }, { 3.2, 3.2 } },
+    selection_box = { { -3.5, -3.5 }, { 3.5, 3.5 } },
+    drawing_box = { { -3.5, -5.5 }, { 3.5, 3.5 } },
+    resistances = {},
+    damaged_trigger_effect = hit_effects.entity(),
+    open_sound = sounds.machine_open,
+    close_sound = sounds.machine_close,
+    vehicle_impact_sound = { filename = '__base__/sound/car-metal-impact.ogg', volume = 0.65 },
+    working_sound = {
+      apparent_volume = 1.5,
+      idle_sound = { filename = '__base__/sound/idle1.ogg', volume = 0.6 },
+      sound = {
+        { filename = '__base__/sound/assembling-machine-t1-1.ogg', volume = 0.8 },
+        { filename = '__base__/sound/assembling-machine-t1-2.ogg', volume = 0.8 },
+      },
+    },
+    fluid_boxes = {
+      {
+        production_type = 'input',
+        pipe_picture = assembler3pipepictures(),
+        pipe_covers = pipecoverspictures(),
+        base_area = 10,
+        base_level = -1,
+        pipe_connections = { { type = 'input', position = { 0, -4 } } },
+        secondary_draw_orders = { north = -1 },
+      },
+      {
+        production_type = 'output',
+        pipe_picture = assembler3pipepictures(),
+        pipe_covers = pipecoverspictures(),
+        base_area = 10,
+        base_level = 1,
+        pipe_connections = { { type = 'output', position = { 0, 4 } } },
+        secondary_draw_orders = { north = -1 },
+      },
+      off_when_no_fluid_recipe = true,
+    },
+    animation = {
+      layers = {
+        {
+          filename = '__space-exploration-graphics-5__/graphics/entity/delivery-cannon/delivery-cannon.png',
+          frame_count = 1,
+          line_length = 1,
+          width = 320 / 2,
+          height = 640 / 2,
+          shift = { 0, -2.5 * 7 / 5 },
+          scale = 7 / 5,
+          hr_version = {
+            filename = '__space-exploration-graphics-5__/graphics/entity/delivery-cannon/hr-delivery-cannon.png',
+            frame_count = 1,
+            line_length = 1,
+            width = 320,
+            height = 640,
+            shift = { 0, -2.5 * 7 / 5 },
+            scale = 0.5 * 7 / 5,
+          },
+        },
+        {
+          draw_as_shadow = true,
+          filename = '__space-exploration-graphics-5__/graphics/entity/delivery-cannon/delivery-cannon-shadow.png',
+          shift = { 1.25, 1 / 32 * 7 / 5 },
+          width = 470 / 2,
+          height = 306 / 2,
+          scale = 7 / 5,
+          hr_version = {
+            draw_as_shadow = true,
+            filename = '__space-exploration-graphics-5__/graphics/entity/delivery-cannon/hr-delivery-cannon-shadow.png',
+            shift = { 1.25, 1 / 32 * 7 / 5 },
+            width = 470,
+            height = 306,
+            scale = 0.5 * 7 / 5,
+          },
+        },
+      },
+    },
+    crafting_categories = { 'll-graviton-matter-obliterator' },
+    crafting_speed = 1,
+    energy_source = { type = 'void' },
+    energy_usage = '270MW',
+    module_specification = { module_slots = 0 },
+    allowed_effects = {},
+    show_recipe_icon = false,
+    fixed_recipe = 'll-remote-artillery',
+    created_effect = {
+      type = 'direct',
+      action_delivery = {
+        type = 'instant',
+        source_effects = { { type = 'script', effect_id = 'll-graviton-matter-obliterator-created' } },
+      },
+    },
+    surface_conditions = { nauvis = false, luna = { plain = true, lowland = false, mountain = true, foundation = true } },
+  },
+  -- Item
+  {
+    name = 'll-graviton-matter-obliterator',
+    type = 'item',
+    icon = '__space-exploration-graphics__/graphics/icons/delivery-cannon.png',
+    icon_size = 64,
+    subgroup = 'defensive-structure',
+    order = 'b[turret]-d[artillery-turret]-c',
+    place_result = 'll-graviton-matter-obliterator',
+    stack_size = 10,
+  },
+  -- Recipe
+  {
+    type = 'recipe',
+    name = 'll-graviton-matter-obliterator',
+    enabled = false,
+    energy_required = 15,
+    ingredients = {
+      { 'artillery-targeting-remote', 1 },
+      { 'satellite', 1 },
+      { 'artillery-turret', 8 },
+      { 'll-aluminium-plate', 40 },
+    },
+    result = 'll-graviton-matter-obliterator',
+  },
+  -- Technology
+  {
+    name = 'll-graviton-matter-obliterator',
+    type = 'technology',
+    effects = { { type = 'unlock-recipe', recipe = 'll-graviton-matter-obliterator' } },
+    icon = '__space-exploration-graphics__/graphics/technology/delivery-cannon.png',
+    icon_size = 128,
+    order = 'e-g',
+    prerequisites = { 'll-radioactivity-center', 'atomic-bomb', 'll-helium' },
+    unit = {
+      count = 400,
+      ingredients = {
+        { 'automation-science-pack', 1 },
+        { 'logistic-science-pack', 1 },
+        { 'chemical-science-pack', 1 },
+        { 'production-science-pack', 1 },
+        { 'utility-science-pack', 1 },
+        { 'll-space-science-pack', 1 },
+        { 'll-quantum-science-pack', 1 },
+      },
+      time = 60,
+    },
+  },
+})
