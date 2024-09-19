@@ -37,7 +37,7 @@ Eternal Winter is not just about survival but also about mastering the art of lo
 
 Prepare yourself for a chilling adventure filled with innovation, danger, and discovery. Can you conquer the Eternal Winter?
 
-# Useful links
+### Useful links
 
 *Join Xorimuth's [Discord](https://discord.gg/pkJc4v9nfT), home of [Lunar Landings](https://mods.factorio.com/mod/LunarLandings?from=search)*
 *Join RedRafe's [Discord](https://discord.gg/pq6bWs8KTY)*
