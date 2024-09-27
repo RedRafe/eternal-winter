@@ -4,8 +4,8 @@ local flame_lifetime = 120
 local shielding_radius = 6
 local coverage = 0.85
 local whitelist = {
-  ['ll-shielding-wall'] = 'stone-wall',
-  ['ll-shielding-gate'] = 'gate',
+  ['ll-shielding-wall'] = 'll-shielding-wall',
+  ['ll-shielding-gate'] = 'll-shielding-gate',
   ['stone-wall'] = 'll-shielding-wall',
   ['gate'] = 'll-shielding-gate',
 }
