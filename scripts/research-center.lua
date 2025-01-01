@@ -39,7 +39,7 @@ gui.add_handlers(ResearchCenter,
     local player = game.get_player(event.player_index)
     local entity = player.opened
     if not entity or not entity.valid then return end
-    local entity_data = Buckets.get(global.research_centers, entity.unit_number)
+    local entity_data = Buckets.get(storage.research_centers, entity.unit_number)
     handler(player, event.element, entity, entity_data)
   end
 )
@@ -51,7 +51,7 @@ local function update_gui(player)
   end
   
   local elems = main_frame.children[2].children[1].children
-  local data = global.research_center_forces[player.force.index]
+  local data = storage.research_center_forces[player.force.index]
   local lvl = data.level
 
   local textfield = elems[1]
@@ -69,7 +69,7 @@ local function on_gui_opened(event)
   local player = game.get_player(event.player_index)
 
   if not player.gui.relative['ll-research-center-relative-frame'] then
-    global.research_center_guis[player.index] = build_gui(player)
+    storage.research_center_guis[player.index] = build_gui(player)
   end
   update_gui(player)
 end
@@ -81,8 +81,8 @@ local function update_entity(entity)
   end
 
   local force_id = entity.force.index
-  global.research_center_forces[force_id] = global.research_center_forces[force_id] or new_force()
-  local data = global.research_center_forces[force_id]
+  storage.research_center_forces[force_id] = storage.research_center_forces[force_id] or new_force()
+  local data = storage.research_center_forces[force_id]
 
   data.crafts = data.crafts + (entity.products_finished or 0)
   entity.products_finished = 0
@@ -102,7 +102,7 @@ local function update_entity(entity)
   -- Disable & remove completed researches to not loop their research servers anymore or use them as void resource
   if data.level == #RC_LEVELS then
     entity.active = false
-    Buckets.remove(global.research_centers, entity.unit_number)
+    Buckets.remove(storage.research_centers, entity.unit_number)
   end
 end
 
@@ -110,28 +110,28 @@ local function on_script_trigger_effect(event)
   if event.effect_id ~= 'll-research-center-created' then return end
 
   local entity = event.target_entity  
-  Buckets.add(global.research_centers, entity.unit_number, { entity = entity })
-  script.register_on_entity_destroyed(entity)
+  Buckets.add(storage.research_centers, entity.unit_number, { entity = entity })
+  script.register_on_object_destroyed(entity)
   update_entity(entity)
 end
 
-local function on_entity_destroyed(event)
-  local entity_data = Buckets.get(global.research_centers, event.unit_number)
+local function on_object_destroyed(event)
+  local entity_data = Buckets.get(storage.research_centers, event.unit_number)
   if not entity_data then return end
 
   if entity_data then
     update_entity(entity_data.entity)
-    Buckets.remove(global.research_centers, event.unit_number)
+    Buckets.remove(storage.research_centers, event.unit_number)
   end
 end
 
 local function on_tick(event)
-  for unit_number, rc_data in pairs(Buckets.get_bucket(global.research_centers, event.tick)) do
+  for unit_number, rc_data in pairs(Buckets.get_bucket(storage.research_centers, event.tick)) do
     local entity = rc_data.entity
     if entity.valid then
       update_entity(entity)
     else
-      Buckets.remove(global.research_centers, unit_number)
+      Buckets.remove(storage.research_centers, unit_number)
     end
   end
 
@@ -146,19 +146,19 @@ ResearchCenter.events = {
   [defines.events.on_tick] = on_tick,
   [defines.events.on_gui_opened] = on_gui_opened,
   [defines.events.on_script_trigger_effect] = on_script_trigger_effect,
-  [defines.events.on_entity_destroyed] = on_entity_destroyed,
+  [defines.events.on_object_destroyed] = on_object_destroyed,
 }
 
 function ResearchCenter.on_init()
-  global.research_centers = global.research_centers or Buckets.new()
-  global.research_center_forces = global.research_center_forces or {}
-  global.research_center_guis = global.research_center_guis or {}
+  storage.research_centers = storage.research_centers or Buckets.new()
+  storage.research_center_forces = storage.research_center_forces or {}
+  storage.research_center_guis = storage.research_center_guis or {}
 end
 
 function ResearchCenter.on_configuration_changed()
-  global.research_centers = global.research_centers or Buckets.new()
-  global.research_center_forces = global.research_center_forces or {}
-  global.research_center_guis = global.research_center_guis or {}
+  storage.research_centers = storage.research_centers or Buckets.new()
+  storage.research_center_forces = storage.research_center_forces or {}
+  storage.research_center_guis = storage.research_center_guis or {}
 end
 
 return ResearchCenter

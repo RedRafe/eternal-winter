@@ -1,4 +1,3 @@
-local ew_util = require '__eternal-winter__.prototypes.ew-util'
 local hit_effects = require '__base__.prototypes.entity.hit-effects'
 local sounds = require '__base__.prototypes.entity.sounds'
 local se_path = '__space-exploration-graphics__/graphics/icons/'
@@ -22,7 +21,7 @@ data:extend({
     energy_required = 60,
     enabled = false,
     ingredients = {
-      { 'wood', 40 },
+      { type = 'item', name = 'wood', amount = 40 },
       { type = 'fluid', name = 'll-oxygen', amount = 100 }
     },
     results = {
@@ -34,6 +33,7 @@ data:extend({
     enabled = false,
     hidden = false,
     hide_from_player_crafting = true,
+    allow_productivity = true,
   },
   -- Item
   {
@@ -54,13 +54,13 @@ data:extend({
     enabled = false,
     energy_required = 40,
     ingredients = {
-      { 'concrete', 100 },
-      { 'steel-plate', 50 },
-      { 'advanced-circuit', 100 },
-      { 'landfill', 100 },
+      { type = 'item', name = 'concrete', amount = 100 },
+      { type = 'item', name = 'steel-plate', amount = 50 },
+      { type = 'item', name = 'advanced-circuit', amount = 100 },
+      { type = 'item', name = 'landfill', amount = 100 },
       { type = 'fluid', name = 'water', amount = 800 },
     },
-    result = 'll-terraform-hub',
+    results = {{ type = 'item', name = 'll-terraform-hub', amount = 1 }}
   },
   -- Entity
   {
@@ -82,58 +82,45 @@ data:extend({
       {
         production_type = 'input',
         pipe_covers = pipecoverspictures(),
-        base_area = 10,
-        base_level = -1,
-        pipe_connections = { { type = 'input', position = { -5, 0 } } },
+        volume = 1000,
+        pipe_connections = { { flow_direction = 'input', position = { -4, 0 }, direction = defines.direction.west } },
         secondary_draw_orders = { north = -1 },
       },
       {
         production_type = 'input',
         pipe_covers = pipecoverspictures(),
-        base_area = 10,
-        base_level = -1,
-        pipe_connections = { { type = 'input', position = { 0, -5 } } },
+        volume = 1000,
+        pipe_connections = { { flow_direction = 'input', position = { 0, -4 }, direction = defines.direction.north } },
         secondary_draw_orders = { north = -1 },
       },
       {
         production_type = 'output',
         pipe_covers = pipecoverspictures(),
-        base_area = 10,
-        base_level = 1,
-        pipe_connections = { { type = 'output', position = { 0, 5 } } },
+        volume = 1000,
+        pipe_connections = { { flow_direction = 'output', position = { 0, 4 }, direction = defines.direction.south } },
         secondary_draw_orders = { north = -1 },
       },
       {
         production_type = 'output',
         pipe_covers = pipecoverspictures(),
-        base_area = 10,
-        base_level = 1,
-        pipe_connections = { { type = 'output', position = { 5, 0 } } },
+        volume = 1000,
+        pipe_connections = { { flow_direction = 'output', position = { 4, 0 }, direction = defines.direction.east } },
         secondary_draw_orders = { north = -1 },
       },
-      off_when_no_fluid_recipe = false,
     },
     open_sound = sounds.machine_open,
     close_sound = sounds.machine_close,
-    vehicle_impact_sound = { filename = '__base__/sound/car-metal-impact.ogg', volume = 0.65 },
+    impact_category = 'metal',
     working_sound = {
       apparent_volume = 1.5,
       idle_sound = { filename = '__base__/sound/idle1.ogg', volume = 0.6 },
       sound = { { filename = '__base__/sound/chemical-plant.ogg', volume = 0.8 } },
     },
-    animation = {
-      layers = {
-        {
-          filename = '__space-exploration-graphics-3__/graphics/entity/growth-facility/sr/growth-facility.png',
-          priority = 'high',
-          width = 4032 / 7 / 2,
-          height = 3360 / 5 / 2,
-          frame_count = 32,
-          line_length = 7,
-          shift = util.by_pixel(0, -24),
-          animation_speed = th_animation_speed,
-          hr_version = {
-            filename = '__space-exploration-graphics-3__/graphics/entity/growth-facility/hr/growth-facility.png',
+    graphics_set = {
+      animation = {
+        layers = {
+          {
+            filename = '__space-exploration-graphics-3__/graphics/entity/growth-facility/growth-facility.png',
             priority = 'high',
             width = 4032 / 7,
             height = 3360 / 5,
@@ -143,21 +130,9 @@ data:extend({
             animation_speed = th_animation_speed,
             scale = 0.5,
           },
-        },
-        {
-          draw_as_shadow = true,
-          filename = '__space-exploration-graphics-3__/graphics/entity/growth-facility/sr/growth-facility-shadow.png',
-          priority = 'high',
-          width = 618 / 2,
-          height = 570 / 2,
-          frame_count = 1,
-          line_length = 1,
-          repeat_count = 32,
-          shift = util.by_pixel(8, 2),
-          animation_speed = th_animation_speed,
-          hr_version = {
+          {
             draw_as_shadow = true,
-            filename = '__space-exploration-graphics-3__/graphics/entity/growth-facility/hr/growth-facility-shadow.png',
+            filename = '__space-exploration-graphics-3__/graphics/entity/growth-facility/growth-facility-shadow.png',
             priority = 'high',
             width = 618,
             height = 570,
@@ -170,7 +145,14 @@ data:extend({
           },
         },
       },
+      working_visualisations = {
+        {
+          effect = 'uranium-glow', -- changes alpha based on energy source light intensity
+          light = { intensity = 0.5, size = 24, shift = { 0.0, 0.0 }, color = { r = 0.7, g = 0.8, b = 1 } },
+        },
+      },
     },
+    off_when_no_fluid_recipe = true,
     crafting_categories = { 'll-terraform' },
     crafting_speed = 1,
     energy_source = {
@@ -197,13 +179,7 @@ data:extend({
     energy_usage = '120kW',
     module_specification = { module_slots = 2 },
     allowed_effects = { 'consumption', 'speed', 'pollution' },
-    working_visualisations = {
-      {
-        effect = 'uranium-glow', -- changes alpha based on energy source light intensity
-        light = { intensity = 0.5, size = 24, shift = { 0.0, 0.0 }, color = { r = 0.7, g = 0.8, b = 1 } },
-      },
-    },
-    surface_conditions = { nauvis = false, luna = { plain = true, lowland = false, mountain = true, foundation = true } },
+    ll_surface_conditions = { nauvis = false, luna = { plain = true, lowland = false, mountain = true, foundation = true } },
   },
   -- Technology
   {
@@ -230,8 +206,6 @@ data:extend({
   },
 })
 
-ew_util.allow_productivity('ll-burn-wood')
-
 local effects = data.raw.technology['ll-terraform-hub'].effects
 
 local function tree_item(name)
@@ -245,7 +219,7 @@ local function tree_item(name)
     order = 'a[' .. name .. ']',
     stack_size = 100,
     place_result = name,
-    surface_conditions = { nauvis = true, luna = false },
+    ll_surface_conditions = { nauvis = true, luna = false },
   }
 end
 
@@ -259,11 +233,14 @@ local function tree_recipe(name)
     category = 'll-terraform',
     energy_required = 60,
     enabled = false,
-    ingredients = { { 'wood', 40 }, { type = 'fluid', name = 'water', amount = 400 } },
+    ingredients = {
+      { type = 'item', name = 'wood', amount = 40 },
+      { type = 'fluid', name = 'water', amount = 400 }
+    },
     results = {
       { type = 'fluid', name = 'water', amount = 350 },
       { type = 'fluid', name = 'll-oxygen', amount = 50 },
-      { name, 1 },
+      { type = 'item', name = name, amount = 1 },
     },
     main_product = name,
     allow_decomposition = false,

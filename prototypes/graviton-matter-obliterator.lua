@@ -46,7 +46,7 @@ data:extend({
     damaged_trigger_effect = hit_effects.entity(),
     open_sound = sounds.machine_open,
     close_sound = sounds.machine_close,
-    vehicle_impact_sound = { filename = '__base__/sound/car-metal-impact.ogg', volume = 0.65 },
+    impact_category = 'metal',
     working_sound = {
       apparent_volume = 1.5,
       idle_sound = { filename = '__base__/sound/idle1.ogg', volume = 0.6 },
@@ -60,34 +60,24 @@ data:extend({
         production_type = 'input',
         pipe_picture = assembler3pipepictures(),
         pipe_covers = pipecoverspictures(),
-        base_area = 10,
-        base_level = -1,
-        pipe_connections = { { type = 'input', position = { 0, -4 } } },
+        volume = 1000,
+        pipe_connections = { { flow_direction = 'input', position = { 0, -3 }, direction = defines.direction.north } },
         secondary_draw_orders = { north = -1 },
       },
       {
         production_type = 'output',
         pipe_picture = assembler3pipepictures(),
         pipe_covers = pipecoverspictures(),
-        base_area = 10,
-        base_level = 1,
-        pipe_connections = { { type = 'output', position = { 0, 4 } } },
+        volume = 1000,
+        pipe_connections = { { flow_direction = 'output', position = { 0, 3 }, direction = defines.direction.south } },
         secondary_draw_orders = { north = -1 },
       },
-      off_when_no_fluid_recipe = true,
     },
-    animation = {
-      layers = {
-        {
-          filename = '__space-exploration-graphics-5__/graphics/entity/delivery-cannon/delivery-cannon.png',
-          frame_count = 1,
-          line_length = 1,
-          width = 320 / 2,
-          height = 640 / 2,
-          shift = { 0, -2.5 * 7 / 5 },
-          scale = 7 / 5,
-          hr_version = {
-            filename = '__space-exploration-graphics-5__/graphics/entity/delivery-cannon/hr-delivery-cannon.png',
+    graphics_set = {
+      animation = {
+        layers = {
+          {
+            filename = '__space-exploration-graphics-5__/graphics/entity/delivery-cannon/delivery-cannon.png',
             frame_count = 1,
             line_length = 1,
             width = 320,
@@ -95,17 +85,9 @@ data:extend({
             shift = { 0, -2.5 * 7 / 5 },
             scale = 0.5 * 7 / 5,
           },
-        },
-        {
-          draw_as_shadow = true,
-          filename = '__space-exploration-graphics-5__/graphics/entity/delivery-cannon/delivery-cannon-shadow.png',
-          shift = { 1.25, 1 / 32 * 7 / 5 },
-          width = 470 / 2,
-          height = 306 / 2,
-          scale = 7 / 5,
-          hr_version = {
+          {
             draw_as_shadow = true,
-            filename = '__space-exploration-graphics-5__/graphics/entity/delivery-cannon/hr-delivery-cannon-shadow.png',
+            filename = '__space-exploration-graphics-5__/graphics/entity/delivery-cannon/delivery-cannon-shadow.png',
             shift = { 1.25, 1 / 32 * 7 / 5 },
             width = 470,
             height = 306,
@@ -114,6 +96,7 @@ data:extend({
         },
       },
     },
+    off_when_no_fluid_recipe = true,
     crafting_categories = { 'll-graviton-matter-obliterator' },
     crafting_speed = 1,
     energy_source = { type = 'void' },
@@ -129,7 +112,7 @@ data:extend({
         source_effects = { { type = 'script', effect_id = 'll-graviton-matter-obliterator-created' } },
       },
     },
-    surface_conditions = { nauvis = false, luna = { plain = true, lowland = false, mountain = true, foundation = true } },
+    ll_surface_conditions = { nauvis = false, luna = { plain = true, lowland = false, mountain = true, foundation = true } },
   },
   -- Item
   {
@@ -149,12 +132,12 @@ data:extend({
     enabled = false,
     energy_required = 15,
     ingredients = {
-      { 'artillery-targeting-remote', 1 },
-      { 'satellite', 1 },
-      { 'artillery-turret', 8 },
-      { 'll-aluminium-plate', 40 },
+      { type = 'item', name = 'artillery-targeting-remote', amount = 1 },
+      { type = 'item', name = 'satellite', amount = 1 },
+      { type = 'item', name = 'artillery-turret', amount = 8 },
+      { type = 'item', name = 'll-aluminium-plate', amount = 40 },
     },
-    result = 'll-graviton-matter-obliterator',
+    results = {{ type = 'item', name = 'll-graviton-matter-obliterator', amount = 1 }}
   },
   -- Technology
   {

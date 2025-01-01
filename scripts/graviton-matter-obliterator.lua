@@ -76,7 +76,7 @@ local function on_bombardment_remote(event)
   local x_offset = math.floor(((rb.x - lt.x) % diameter) / 2)
   local y_offset = math.floor(((rb.y - lt.y) % diameter) / 2)
 
-  global.gmo_targets[force.index] = global.gmo_targets[force.index] or Queue.new()
+  storage.gmo_targets[force.index] = storage.gmo_targets[force.index] or Queue.new()
 
   for x = lt.x + x_offset, rb.x, diameter do
     for y = lt.y + y_offset, rb.y, diameter do
@@ -91,7 +91,7 @@ local function on_bombardment_remote(event)
         raise_built = true,
       }
       if placeholder and placeholder.valid then
-        Queue.push(global.gmo_targets[force.index], {
+        Queue.push(storage.gmo_targets[force.index], {
           position = placeholder.position,
           surface = placeholder.surface.index,
           tick = game.tick,
@@ -112,7 +112,7 @@ local function on_smart_remote(event)
   local force = player.force
   local lt, rb = event.area.left_top, event.area.right_bottom
 
-  global.gmo_targets[force.index] = global.gmo_targets[force.index] or Queue.new()
+  storage.gmo_targets[force.index] = storage.gmo_targets[force.index] or Queue.new()
 
   if lt.x == rb.x or lt.y == rb.y then
     return
@@ -154,7 +154,7 @@ local function on_smart_remote(event)
     }
     if placeholder and placeholder.valid then
       points_hit[#points_hit+1] = placeholder.position
-      Queue.push(global.gmo_targets[force.index], {
+      Queue.push(storage.gmo_targets[force.index], {
         position = placeholder.position,
         surface = placeholder.surface.index,
         tick = game.tick,
@@ -198,7 +198,7 @@ local function on_exploration_remote(event)
   local force = player.force
   local lf, rb = event.area.left_top, event.area.right_bottom
 
-  global.gmo_chunks[force.index] = global.gmo_chunks[force.index] or {}
+  storage.gmo_chunks[force.index] = storage.gmo_chunks[force.index] or {}
 
   local artilleries = surface.find_entities_filtered{
     area = event.area,
@@ -213,8 +213,8 @@ local function on_exploration_remote(event)
     local arty_chunk_position = position_to_chunk(entity.position)
     local arty_chunk_id = chunk_to_chunkid(arty_chunk_position.x, arty_chunk_position.y)
 
-    if not global.gmo_chunks[force.index][arty_chunk_id] then
-      global.gmo_chunks[force.index][arty_chunk_id] = {
+    if not storage.gmo_chunks[force.index][arty_chunk_id] then
+      storage.gmo_chunks[force.index][arty_chunk_id] = {
         force = force,
         surface = surface,
         range = range,
@@ -297,8 +297,8 @@ local function update_entity(entity)
   end
 
   local force_id = entity.force.index
-  global.gmo_forces[force_id] = global.gmo_forces[force_id] or new_force()
-  local data = global.gmo_forces[force_id]
+  storage.gmo_forces[force_id] = storage.gmo_forces[force_id] or new_force()
+  local data = storage.gmo_forces[force_id]
 
   data.shells = data.shells + (entity.products_finished or 0)
   entity.products_finished = 0
@@ -308,18 +308,18 @@ local function on_script_trigger_effect(event)
   if event.effect_id ~= "ll-graviton-matter-obliterator-created" then return end
 
   local entity = event.target_entity  
-  Buckets.add(global.gmos, entity.unit_number, { entity = entity })
-  script.register_on_entity_destroyed(entity)
+  Buckets.add(storage.gmos, entity.unit_number, { entity = entity })
+  script.register_on_object_destroyed(entity)
   update_entity(entity)
 end
 
-local function on_entity_destroyed(event)
-  local entity_data = Buckets.get(global.gmos, event.unit_number)
+local function on_object_destroyed(event)
+  local entity_data = Buckets.get(storage.gmos, event.unit_number)
   if not entity_data then return end
 
   if entity_data then
     update_entity(entity_data.entity)
-    Buckets.remove(global.gmos, event.unit_number)
+    Buckets.remove(storage.gmos, event.unit_number)
   end
 end
 
@@ -347,7 +347,7 @@ local function on_player_alt_selected_area(event)
   local surface = player.surface
   local force = player.force
 
-  global.gmo_targets[force.index] = global.gmo_targets[force.index] or Queue.new()
+  storage.gmo_targets[force.index] = storage.gmo_targets[force.index] or Queue.new()
 
   local flares = surface.find_entities_filtered{
     area = event.area,
@@ -357,11 +357,11 @@ local function on_player_alt_selected_area(event)
 
   for _, entity in pairs(flares) do
     local pos_e = entity.position
-    for k, v in Queue.pairs(global.gmo_targets[force.index]) do
+    for k, v in Queue.pairs(storage.gmo_targets[force.index]) do
       local pos_q = v.position
       -- same position and same force
       if pos_e.x == pos_q.x and pos_e.y == pos_q.y and entity.force.index == v.force.index then
-        Queue.fast_remove(global.gmo_targets[force.index], k)
+        Queue.fast_remove(storage.gmo_targets[force.index], k)
         entity.destroy()
         break
       end
@@ -371,26 +371,26 @@ end
 
 local function on_tick(event)
   -- Check GMOs
-  for unit_number, rc_data in pairs(Buckets.get_bucket(global.gmos, event.tick)) do
+  for unit_number, rc_data in pairs(Buckets.get_bucket(storage.gmos, event.tick)) do
     local entity = rc_data.entity
     if entity.valid then
       update_entity(entity)
     else
-      Buckets.remove(global.gmos, unit_number)
+      Buckets.remove(storage.gmos, unit_number)
     end
   end
 
   -- Consume targets queue 1/tick/force
   for _, force in pairs(game.forces) do
-    if global.gmo_targets[force.index] and global.gmo_forces[force.index] then
-      local data = global.gmo_forces[force.index]
-      local target = Queue.pop(global.gmo_targets[force.index])
+    if storage.gmo_targets[force.index] and storage.gmo_forces[force.index] then
+      local data = storage.gmo_forces[force.index]
+      local target = Queue.pop(storage.gmo_targets[force.index])
       if data.shells > 0 and target then
         if target.tick + cooldown < game.tick then
           local success = strike(target, force) and 1 or 0
           data.shells = data.shells - success
         else
-          Queue.push(global.gmo_targets[force.index], target)
+          Queue.push(storage.gmo_targets[force.index], target)
         end
       end
     end
@@ -405,21 +405,21 @@ GMO.events = {
   [defines.events.on_player_selected_area] = on_player_selected_area,
   [defines.events.on_player_alt_selected_area] = on_player_alt_selected_area,
   [defines.events.on_script_trigger_effect] = on_script_trigger_effect,
-  [defines.events.on_entity_destroyed] = on_entity_destroyed,
+  [defines.events.on_object_destroyed] = on_object_destroyed,
 }
 
 function GMO.on_init()
-  global.gmos = global.gmos or Buckets.new()
-  global.gmo_forces = global.gmo_forces or {}
-  global.gmo_targets = global.gmo_targets or {}
-  global.gmo_chunks = global.gmo_chunks or {}
+  storage.gmos = storage.gmos or Buckets.new()
+  storage.gmo_forces = storage.gmo_forces or {}
+  storage.gmo_targets = storage.gmo_targets or {}
+  storage.gmo_chunks = storage.gmo_chunks or {}
 end
 
 function GMO.on_configuration_changed()
-  global.gmos = global.gmos or Buckets.new()
-  global.gmo_forces = global.gmo_forces or {}
-  global.gmo_targets = global.gmo_targets or {}
-  global.gmo_chunks = global.gmo_chunks or {}
+  storage.gmos = storage.gmos or Buckets.new()
+  storage.gmo_forces = storage.gmo_forces or {}
+  storage.gmo_targets = storage.gmo_targets or {}
+  storage.gmo_chunks = storage.gmo_chunks or {}
 end
 
 return GMO

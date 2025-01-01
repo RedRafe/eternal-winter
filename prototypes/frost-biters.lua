@@ -1,10 +1,10 @@
 if not mods['Cold_biters'] then return end
 
 local decals = function() return {
-  { decorative = 'lava-decal-blue',  spawn_min = 0, spawn_max = 2, spawn_min_radius = 1, spawn_max_radius = 2 },
-  { decorative = 'wetland-decal',    spawn_min = 1, spawn_max = 1, spawn_min_radius = 1, spawn_max_radius = 2 },
-  { decorative = 'puddle-decal',     spawn_min = 1, spawn_max = 2, spawn_min_radius = 0, spawn_max_radius = 1 },
-  { decorative = 'sand-decal-white', spawn_min = 2, spawn_max = 4, spawn_min_radius = 1, spawn_max_radius = 2 },
+  --{ decorative = 'lava-decal-blue',  spawn_min = 0, spawn_max = 2, spawn_min_radius = 1, spawn_max_radius = 2 },
+  --{ decorative = 'wetland-decal',    spawn_min = 1, spawn_max = 1, spawn_min_radius = 1, spawn_max_radius = 2 },
+  --{ decorative = 'puddle-decal',     spawn_min = 1, spawn_max = 2, spawn_min_radius = 0, spawn_max_radius = 1 },
+  --{ decorative = 'sand-decal-white', spawn_min = 2, spawn_max = 4, spawn_min_radius = 1, spawn_max_radius = 2 },
 }	end
 
 -- Spawners

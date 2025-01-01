@@ -1,4 +1,3 @@
-local ew_util = require '__eternal-winter__.prototypes.ew-util'
 local hit_effects = require '__base__.prototypes.entity.hit-effects'
 local sounds = require '__base__.prototypes.entity.sounds'
 local research_center_animation_speed = 0.05
@@ -18,7 +17,7 @@ data:extend({
     icons = {
       { icon = '__LunarLandings__/graphics/icons/moon-rock.png', icon_size = 64, icon_mipmaps = 4 },
       {
-        icon = '__core__/graphics/icons/search-white.png',
+        icon = '__core__/graphics/icons/search.png',
         icon_size = 32,
         icon_mipmaps = 1,
         scale = 0.5,
@@ -46,7 +45,7 @@ data:extend({
     icons = {
       { icon = '__LunarLandings__/graphics/icons/moon-rock.png', icon_size = 64, icon_mipmaps = 4 },
       {
-        icon = '__core__/graphics/icons/search-white.png',
+        icon = '__core__/graphics/icons/search.png',
         icon_size = 32,
         icon_mipmaps = 1,
         scale = 0.5,
@@ -74,7 +73,7 @@ data:extend({
     icons = {
       { icon = '__space-exploration-graphics__/graphics/icons/water-ice.png', icon_size = 64, icon_mipmaps = 4 },
       {
-        icon = '__core__/graphics/icons/search-white.png',
+        icon = '__core__/graphics/icons/search.png',
         icon_size = 32,
         icon_mipmaps = 1,
         scale = 0.5,
@@ -102,7 +101,7 @@ data:extend({
     icons = {
       { icon = '__LunarLandings__/graphics/item/raw-imersite/raw-imersite.png', icon_size = 64, icon_mipmaps = 4 },
       {
-        icon = '__core__/graphics/icons/search-white.png',
+        icon = '__core__/graphics/icons/search.png',
         icon_size = 32,
         icon_mipmaps = 1,
         scale = 0.5,
@@ -138,7 +137,7 @@ data:extend({
     damaged_trigger_effect = hit_effects.entity(),
     open_sound = sounds.machine_open,
     close_sound = sounds.machine_close,
-    vehicle_impact_sound = { filename = '__base__/sound/car-metal-impact.ogg', volume = 0.65 },
+    impact_category = 'metal',
     working_sound = {
       sound = { filename = '__base__/sound/lab.ogg', volume = 0.7 },
       audible_distance_modifier = 0.7,
@@ -148,18 +147,11 @@ data:extend({
     collision_box = { { -2.2, -2.2 }, { 2.2, 2.2 } },
     selection_box = { { -2.5, -2.5 }, { 2.5, 2.5 } },
     drawing_box = { { -2.5, -4.0 }, { 2.5, 2.5 } },
-    animation = {
-      layers = {
-        {
-          filename = '__space-exploration-graphics-5__/graphics/entity/supercomputer/sr/supercomputer-4.png',
-          priority = 'high',
-          width = 320 / 2,
-          height = 384 / 2,
-          frame_count = 1,
-          shift = util.by_pixel(-0, -16),
-          animation_speed = research_center_animation_speed,
-          hr_version = {
-            filename = '__space-exploration-graphics-5__/graphics/entity/supercomputer/hr/supercomputer-4.png',
+    graphics_set = {
+      animation = {
+        layers = {
+          {
+            filename = '__space-exploration-graphics-5__/graphics/entity/supercomputer/supercomputer-4.png',
             priority = 'high',
             width = 320,
             height = 384,
@@ -168,20 +160,9 @@ data:extend({
             animation_speed = research_center_animation_speed,
             scale = 0.5,
           },
-        },
-        {
-          draw_as_shadow = true,
-          filename = '__space-exploration-graphics-5__/graphics/entity/supercomputer/sr/supercomputer-shadow.png',
-          priority = 'high',
-          width = 264 / 2,
-          height = 234 / 2,
-          frame_count = 1,
-          line_length = 1,
-          shift = util.by_pixel(75, 23),
-          animation_speed = research_center_animation_speed,
-          hr_version = {
+          {
             draw_as_shadow = true,
-            filename = '__space-exploration-graphics-5__/graphics/entity/supercomputer/hr/supercomputer-shadow.png',
+            filename = '__space-exploration-graphics-5__/graphics/entity/supercomputer/supercomputer-shadow.png',
             priority = 'high',
             width = 264,
             height = 234,
@@ -193,27 +174,14 @@ data:extend({
           },
         },
       },
-    },
-    working_visualisations = {
-      {
-        effect = 'uranium-glow', -- changes alpha based on energy source light intensity
-        light = { intensity = 0.8, size = 16, shift = { 0.0, 0.0 }, color = { r = 0.3, g = 0.1, b = 1 } },
-      },
-      {
-        animation = {
-          filename = '__space-exploration-graphics-5__/graphics/entity/supercomputer/sr/supercomputer-4-working.png',
-          priority = 'high',
-          width = 504 / 4 / 2,
-          height = 1064 / 4 / 2,
-          line_length = 4,
-          frame_count = 16,
-          shift = util.by_pixel(-0, -22),
-          animation_speed = research_center_animation_speed,
-          blend_mode = 'additive',
-          draw_as_glow = true,
-          max_advance = 1,
-          hr_version = {
-            filename = '__space-exploration-graphics-5__/graphics/entity/supercomputer/hr/supercomputer-4-working.png',
+      working_visualisations = {
+        {
+          effect = 'uranium-glow', -- changes alpha based on energy source light intensity
+          light = { intensity = 0.8, size = 16, shift = { 0.0, 0.0 }, color = { r = 0.3, g = 0.1, b = 1 } },
+        },
+        {
+          animation = {
+            filename = '__space-exploration-graphics-5__/graphics/entity/supercomputer/supercomputer-4-working.png',
             priority = 'high',
             width = 504 / 4,
             height = 1064 / 4,
@@ -233,7 +201,7 @@ data:extend({
     source_inventory_size = 1,
     result_inventory_size = 0,
     crafting_speed = 1,
-    energy_source = { type = 'electric', usage_priority = 'secondary-input', emissions_per_minute = 0 },
+    energy_source = { type = 'electric', usage_priority = 'secondary-input', emissions_per_minute = { pollution = 0 } },
     energy_usage = '16000kW',
     module_specification = { module_slots = 3 },
     allowed_effects = { 'consumption', 'speed', 'pollution' },
@@ -244,7 +212,7 @@ data:extend({
         source_effects = { { type = 'script', effect_id = 'll-research-center-created' } },
       },
     },
-    surface_conditions = { nauvis = false, luna = { plain = true, lowland = false, mountain = true, foundation = true } },
+    ll_surface_conditions = { nauvis = false, luna = { plain = true, lowland = false, mountain = true, foundation = true } },
   },
   -- Item
   {
@@ -264,12 +232,12 @@ data:extend({
     enabled = false,
     energy_required = 15,
     ingredients = {
-      { 'advanced-circuit', 200 },
-      { 'steel-plate', 40 },
-      { 'copper-cable', 10 },
-      { 'll-silicon', 20 }
+      { type = 'item', name = 'advanced-circuit', amount = 200 },
+      { type = 'item', name = 'steel-plate', amount = 40 },
+      { type = 'item', name = 'copper-cable', amount = 10 },
+      { type = 'item', name = 'll-silicon', amount = 20 }
     },
-    result = 'll-research-center',
+    results = {{ type = 'item', name = 'll-research-center', amount = 1 }}
   },
   -- Technology
   {
@@ -304,13 +272,13 @@ data:extend({
 for i = 1, 5 do
   local recipe = table.deepcopy(data.raw.recipe['ll-moon-rock-processing-with-oxygen'])
   recipe.name = recipe.name .. '-' .. tostring(i)
-  recipe.localised_name = {'recipe-name.ll-moon-rock-processing-with-oxygen-tiered', i}
+  --recipe.localised_name = {'recipe-name.ll-moon-rock-processing-with-oxygen-tiered', i}
   recipe.order = recipe.order .. '-[' .. tostring(i) .. ']'
   recipe.results = {
     { type = 'item', name = 'll-silica', amount = 5 },
     { type = 'item', name = 'stone', amount = 5 },
     { type = 'fluid', name = 'll-oxygen', amount = 100 + (i * 40), fluidbox_index = 1 },
   }
+  recipe.allow_productivity = true
   data:extend({ recipe })
-  ew_util.allow_productivity(recipe.name)
 end

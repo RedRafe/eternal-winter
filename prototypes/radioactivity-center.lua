@@ -1,4 +1,3 @@
-local ew_util = require '__eternal-winter__.prototypes.ew-util'
 local hit_effects = require '__base__.prototypes.entity.hit-effects'
 local sounds = require '__base__.prototypes.entity.sounds'
 local se_path = '__space-exploration-graphics__/graphics/icons/'
@@ -31,7 +30,7 @@ data:extend({
     stack_size = 50,
     category = 'll-radioactivity',
     tier = 1,
-    effect = { speed = { bonus = 1 }, pollution = { bonus = 1 } },
+    effect = { speed = 1, pollution = 1 },
     limitation = {},
     limitation_message_key = 'll-radioactivity',
     beacon_tint = { primary = { r = 1, g = 0.5, b = 0, a = 1 }, secondary = { r = 1, g = 0.5, b = 0, a = 1 } },
@@ -222,6 +221,7 @@ data:extend({
     enabled = false,
     hidden = false,
     hide_from_player_crafting = false,
+    allow_productivity = true,
   },
   -- Alien sample
   {
@@ -261,7 +261,7 @@ data:extend({
       { type = 'item', name = 'explosives', amount = 2 },
     },
     results = {
-      { type = 'item', name = 'empty-barrel', amount = 13 },
+      { type = 'item', name = 'barrel', amount = 13 },
       { type = 'item', name = 'll-alien-seed', amount = 10 },
       { type = 'item', name = 'll-matter-artillery-shell', amount = 1, probability = 0.999 },
     },
@@ -291,6 +291,7 @@ data:extend({
     enabled = false,
     hidden = false,
     hide_from_player_crafting = false,
+    allow_productivity = true,
   },
   -- Contaminated waste
   {
@@ -365,7 +366,7 @@ data:extend({
     category = 'll-radioactivity',
     energy_required = 50,
     ingredients = {
-      { type = 'item', name = 'empty-barrel', amount = 1 },
+      { type = 'item', name = 'barrel', amount = 1 },
       { type = 'item', name = 'uranium-235', amount = 1 },
     },
     results = { { type = 'item', name = 'll-contaminated-waste-barrel', amount = 1 } },
@@ -401,6 +402,7 @@ data:extend({
     enabled = false,
     hidden = false,
     hide_from_player_crafting = false,
+    allow_productivity = true,
   },
   {
     name = 'll-empty-frame-casting',
@@ -425,6 +427,7 @@ data:extend({
     enabled = false,
     hidden = false,
     hide_from_player_crafting = false,
+    allow_productivity = true,
   },
   -- Empty shell
   {
@@ -537,6 +540,7 @@ data:extend({
     enabled = false,
     hidden = false,
     hide_from_player_crafting = false,
+    allow_productivity = true,
   },
   -- Matter artillery shell
   {
@@ -551,7 +555,7 @@ data:extend({
       { type = 'item', name = 'artillery-shell', amount = 1 },
     },
     results = {
-      { type = 'item', name = 'empty-barrel', amount = 8 },
+      { type = 'item', name = 'barrel', amount = 8 },
       { type = 'item', name = 'll-contaminated-shell', amount = 1 },
       { type = 'item', name = 'll-matter-artillery-shell', amount = 1, probability = 0.01 },
     },
@@ -577,7 +581,7 @@ data:extend({
       { type = 'item', name = 'explosive-rocket', amount = 1 },
     },
     results = {
-      { type = 'item', name = 'empty-barrel', amount = 1 },
+      { type = 'item', name = 'barrel', amount = 1 },
       { type = 'item', name = 'll-radioactive-alien-nest', amount = 1 },
     },
     main_product = 'll-radioactive-alien-nest',
@@ -596,7 +600,7 @@ data:extend({
     energy_required = 100,
     ingredients = {
       { type = 'item', name = 'll-empty-shell', amount = 3 },
-      { type = 'item', name = 'used-up-uranium-fuel-cell', amount = 1 },
+      { type = 'item', name = 'depleted-uranium-fuel-cell', amount = 1 },
     },
     results = { { type = 'item', name = 'll-radioactive-shell', amount = 3 } },
     subgroup = 'intermediate-product',
@@ -622,7 +626,7 @@ data:extend({
     damaged_trigger_effect = hit_effects.entity(),
     open_sound = sounds.machine_open,
     close_sound = sounds.machine_close,
-    vehicle_impact_sound = { filename = '__base__/sound/car-metal-impact.ogg', volume = 0.65 },
+    impact_category = 'metal',
     working_sound = { sound = { { filename = '__base__/sound/lab.ogg', volume = 0.8 } }, apparent_volume = 1.5 },
     collision_box = { { -3.2, -3.2 }, { 3.2, 3.2 } },
     selection_box = { { -3.5, -3.5 }, { 3.5, 3.5 } },
@@ -631,51 +635,37 @@ data:extend({
       {
         production_type = 'input',
         pipe_covers = pipecoverspictures(),
-        base_area = 10,
-        base_level = -1,
-        pipe_connections = { { type = 'input', position = { 0, -4 } } },
+        volume = 1000,
+        pipe_connections = { { flow_direction = 'input', position = { 0, -3 }, direction = defines.direction.north } },
         secondary_draw_orders = { north = -1 },
       },
       {
         production_type = 'input',
         pipe_covers = pipecoverspictures(),
-        base_area = 10,
-        base_level = -1,
-        pipe_connections = { { type = 'input', position = { -4, 0 } } },
+        volume = 1000,
+        pipe_connections = { { flow_direction = 'input', position = { -3, 0 }, direction = defines.direction.west } },
         secondary_draw_orders = { north = -1 },
       },
       {
         production_type = 'output',
         pipe_covers = pipecoverspictures(),
-        base_area = 10,
-        base_level = 1,
-        pipe_connections = { { type = 'output', position = { 0, 4 } } },
+        volume = 1000,
+        pipe_connections = { { flow_direction = 'output', position = { 0, 3 }, direction = defines.direction.south } },
         secondary_draw_orders = { north = -1 },
       },
       {
         production_type = 'output',
         pipe_covers = pipecoverspictures(),
-        base_area = 10,
-        base_level = 1,
-        pipe_connections = { { type = 'output', position = { 4, 0 } } },
+        volume = 1000,
+        pipe_connections = { { flow_direction = 'output', position = { 3, 0 }, direction = defines.direction.east } },
         secondary_draw_orders = { north = -1 },
       },
-      off_when_no_fluid_recipe = true,
     },
-    idle_animation = {
-      layers = {
-        {
-          filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/sr/base.png',
-          priority = 'high',
-          width = 448 / 2,
-          height = 576 / 2,
-          frame_count = 1,
-          line_length = 1,
-          repeat_count = 64,
-          shift = util.by_pixel(0, -16),
-          animation_speed = rc_animation_speed,
-          hr_version = {
-            filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/hr/base.png',
+    graphics_set = {
+      animation = {
+        layers = {
+          {
+            filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/base.png',
             priority = 'high',
             width = 448,
             height = 576,
@@ -686,89 +676,7 @@ data:extend({
             animation_speed = rc_animation_speed,
             scale = 0.5,
           },
-        },
-        {
-          draw_as_shadow = true,
-          filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/sr/shadow.png',
-          priority = 'high',
-          width = 566 / 2,
-          height = 400 / 2,
-          frame_count = 1,
-          line_length = 1,
-          repeat_count = 64,
-          shift = util.by_pixel(35, 20),
-          animation_speed = rc_animation_speed,
-          hr_version = {
-            draw_as_shadow = true,
-            filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/hr/shadow.png',
-            priority = 'high',
-            width = 566,
-            height = 400,
-            frame_count = 1,
-            line_length = 1,
-            repeat_count = 64,
-            shift = util.by_pixel(35, 20),
-            animation_speed = rc_animation_speed,
-            scale = 0.5,
-          },
-        },
-      },
-    },
-    animation = {
-      layers = {
-        {
-          filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/sr/base.png',
-          priority = 'high',
-          width = 448 / 2,
-          height = 576 / 2,
-          frame_count = 1,
-          line_length = 1,
-          repeat_count = 64,
-          shift = util.by_pixel(0, -16),
-          animation_speed = rc_animation_speed,
-          hr_version = {
-            filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/hr/base.png',
-            priority = 'high',
-            width = 448,
-            height = 576,
-            frame_count = 1,
-            line_length = 1,
-            repeat_count = 64,
-            shift = util.by_pixel(0, -16),
-            animation_speed = rc_animation_speed,
-            scale = 0.5,
-          },
-        },
-        {
-          priority = 'high',
-          width = 1392 / 4 / 2,
-          height = 1880 / 5 / 2,
-          frame_count = 64,
-          shift = util.by_pixel(0.5, -17),
-          animation_speed = rc_animation_speed,
-          stripes = {
-            {
-              filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/sr/animation-1.png',
-              width_in_frames = 4,
-              height_in_frames = 5,
-            },
-            {
-              filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/sr/animation-2.png',
-              width_in_frames = 4,
-              height_in_frames = 5,
-            },
-            {
-              filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/sr/animation-3.png',
-              width_in_frames = 4,
-              height_in_frames = 5,
-            },
-            {
-              filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/sr/animation-4.png',
-              width_in_frames = 4,
-              height_in_frames = 1,
-            },
-          },
-          hr_version = {
+          {
             priority = 'high',
             width = 1392 / 4,
             height = 1880 / 5,
@@ -778,42 +686,30 @@ data:extend({
             scale = 0.5,
             stripes = {
               {
-                filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/hr/animation-1.png',
+                filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/animation-1.png',
                 width_in_frames = 4,
                 height_in_frames = 5,
               },
               {
-                filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/hr/animation-2.png',
+                filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/animation-2.png',
                 width_in_frames = 4,
                 height_in_frames = 5,
               },
               {
-                filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/hr/animation-3.png',
+                filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/animation-3.png',
                 width_in_frames = 4,
                 height_in_frames = 5,
               },
               {
-                filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/hr/animation-4.png',
+                filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/animation-4.png',
                 width_in_frames = 4,
                 height_in_frames = 1,
               },
             },
           },
-        },
-        {
-          draw_as_shadow = true,
-          filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/sr/shadow.png',
-          priority = 'high',
-          width = 566 / 2,
-          height = 400 / 2,
-          frame_count = 1,
-          line_length = 1,
-          repeat_count = 64,
-          shift = util.by_pixel(35, 20),
-          animation_speed = rc_animation_speed,
-          hr_version = {
+          {
             draw_as_shadow = true,
-            filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/hr/shadow.png',
+            filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/shadow.png',
             priority = 'high',
             width = 566,
             height = 400,
@@ -826,19 +722,50 @@ data:extend({
           },
         },
       },
-    },
-    crafting_categories = { 'll-radioactivity' },
-    crafting_speed = 1,
-    energy_source = { type = 'electric', usage_priority = 'secondary-input', emissions_per_minute = 0 },
-    energy_usage = '8MW',
-    module_specification = { module_slots = 10, module_info_max_icon_rows = 2, module_info_max_icons_per_row = 5 },
-    allowed_effects = { 'consumption', 'speed', 'pollution' },
-    working_visualisations = {
-      {
-        effect = 'uranium-glow', -- changes alpha based on energy source light intensity
-        light = { intensity = 0.6, size = 16, shift = { 0.0, 0.0 }, color = { r = 1, g = 0.5, b = 0 } },
+      idle_animation = {
+        layers = {
+          {
+            filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/base.png',
+            priority = 'high',
+            width = 448,
+            height = 576,
+            frame_count = 1,
+            line_length = 1,
+            repeat_count = 64,
+            shift = util.by_pixel(0, -16),
+            animation_speed = rc_animation_speed,
+            scale = 0.5,
+          },
+          {
+            draw_as_shadow = true,
+            filename = '__space-exploration-graphics-3__/graphics/entity/plasma-generator/shadow.png',
+            priority = 'high',
+            width = 566,
+            height = 400,
+            frame_count = 1,
+            line_length = 1,
+            repeat_count = 64,
+            shift = util.by_pixel(35, 20),
+            animation_speed = rc_animation_speed,
+            scale = 0.5,
+          },
+        },
+      },
+      working_visualisations = {
+        {
+          effect = 'uranium-glow', -- changes alpha based on energy source light intensity
+          light = { intensity = 0.6, size = 16, shift = { 0.0, 0.0 }, color = { r = 1, g = 0.5, b = 0 } },
+        },
       },
     },
+    off_when_no_fluid_recipe = true,
+    crafting_categories = { 'll-radioactivity' },
+    crafting_speed = 1,
+    energy_source = { type = 'electric', usage_priority = 'secondary-input', emissions_per_minute = { pollution = 0 } },
+    energy_usage = '8MW',
+    module_slots = 10,
+    allowed_module_categories = { 'll-radioactivity' },
+    allowed_effects = { 'consumption', 'speed', 'pollution' },
     created_effect = {
       type = 'direct',
       action_delivery = {
@@ -846,7 +773,7 @@ data:extend({
         source_effects = { { type = 'script', effect_id = 'll-radioactivity-center-created' } },
       },
     },
-    surface_conditions = { nauvis = false, luna = { plain = true, lowland = false, mountain = true, foundation = true } },
+    ll_surface_conditions = { nauvis = false, luna = { plain = true, lowland = false, mountain = true, foundation = true } },
   },
   -- Item
   {
@@ -866,10 +793,10 @@ data:extend({
     enabled = false,
     energy_required = 15,
     ingredients = {
-      { 'centrifuge', 2 },
-      { 'll-aluminium-plate', 40 }
+      { type = 'item', name = 'centrifuge', amount = 2 },
+      { type = 'item', name = 'll-aluminium-plate', amount = 40 }
     },
-    result = 'll-radioactivity-center',
+    results = {{ type = 'item', name = 'll-radioactivity-center', amount = 1 }}
   },
   -- Technology
   {
@@ -916,17 +843,14 @@ data:extend({
   },
 })
 
-ew_util.allow_productivity('ll-alien-artifact')
-ew_util.allow_productivity('ll-luna-sample')
-ew_util.allow_productivity('ll-empty-frame')
-ew_util.allow_productivity('ll-empty-frame-casting')
-ew_util.allow_productivity('ll-capsule')
-
-ew_util.whitelist_recipes('ll-alien', {
+for _, name in pairs({
   'll-alien',
   'll-matter-artillery-shell',
   'll-radioactive-alien-nest',
   'll-radioactive-alien-nest',
   'll-radioactive-shell',
   'll-uranium-contaminated',
-})
+}) do
+  data.raw.recipe[name].allowed_module_categories = data.raw.recipe[name].allowed_module_categories or { 'speed', 'efficiency' }
+  table.insert(data.raw.recipe[name].allowed_module_categories, 'll-radioactivity')
+end

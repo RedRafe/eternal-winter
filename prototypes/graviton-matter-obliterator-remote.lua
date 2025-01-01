@@ -4,6 +4,32 @@ local remote = {
   exploration = 'll-gmo-artillery-exploration-remote',
 }
 
+local selection_color = {r = 1, g = 0.28, b = 0, a = 1}
+local alt_selection_color = {r = 0, g = 0, b = 1, a = 1}
+
+local enemy_mode = function(color)
+  return {
+    border_color = color,
+    cursor_box_type = 'multiplayer-entity',
+    mode = {
+      'enemy'
+    },
+  }
+end
+
+local exploration_mode = function(mode, color)
+  return {
+    border_color = color,
+    cursor_box_type = 'multiplayer-entity',
+    mode = mode,
+    entity_filter_mode = 'whitelist',
+    entity_type_filters = {
+      'artillery-turret',
+      'artillery-wagon',
+    },
+  }
+end
+
 data:extend({
   -- [[ Bombardment ]]
   -- Item
@@ -18,26 +44,24 @@ data:extend({
         icon_size = 32
       },
     },
-    flags = {'mod-openable'},
+    flags = { 'mod-openable', 'only-in-cursor', 'not-stackable', 'spawnable' },
     stack_size = 1,
-    stackable = false,
-    selection_color = {r = 1, g = 0.28, b = 0, a = 1},
-    alt_selection_color = {r = 0, g = 0, b = 1, a = 1},
-    selection_mode = {'enemy'},
-    alt_selection_mode = {'enemy'},
-    selection_cursor_box_type = 'entity',
-    alt_selection_cursor_box_type = 'entity'
+    select = enemy_mode(selection_color),
+    alt_select = enemy_mode(alt_selection_color),
+    reverse_select = enemy_mode(selection_color),
+    alt_reverse_select = enemy_mode(alt_selection_color),
   },
-  -- Recicpe
+  -- Shortcut
   {
-    type = 'recipe',
-    name = remote.bombardment,
-    enabled = false,
-    ingredients = {
-      {'artillery-targeting-remote', 5},
-      {'satellite', 1}
-    },
-    result = remote.bombardment
+    type = 'shortcut',
+    name = 'give-'..remote.bombardment,
+    action = 'spawn-item',
+    technology_to_unlock = remote.bombardment,
+    item_to_spawn = remote.bombardment,
+    icon = '__eternal-winter__/graphics/icons/artillery-bombardment-remote.png',
+    icon_size = 32,
+    small_icon = '__eternal-winter__/graphics/icons/artillery-bombardment-remote.png',
+    small_icon_size = 32,
   },
   -- Technology
   {
@@ -55,7 +79,7 @@ data:extend({
         shift = {49, 49},
       },
     },
-    effects = { { type = 'unlock-recipe', recipe = remote.bombardment } },
+    effects = { },
     order = 'e-h',
     prerequisites = { 'll-graviton-matter-obliterator' },
     unit = {
@@ -85,25 +109,24 @@ data:extend({
         icon_size = 32
       }
     },
-    flags = {'mod-openable'},
+    flags = { 'mod-openable', 'only-in-cursor', 'not-stackable', 'spawnable' },
     stack_size = 1,
-    stackable = false,
-    selection_color = {r = 1, g = 0.28, b = 0, a = 1},
-    alt_selection_color = {r = 0, g = 0, b = 1, a = 1},
-    selection_mode = {'enemy'},
-    alt_selection_mode = {'enemy'},
-    selection_cursor_box_type = 'entity',
-    alt_selection_cursor_box_type = 'entity'
+    select = enemy_mode(selection_color),
+    alt_select = enemy_mode(alt_selection_color),
+    reverse_select = enemy_mode(selection_color),
+    alt_reverse_select = enemy_mode(alt_selection_color),
   },
-  -- Recipe
+  -- Shortcut
   {
-    type = 'recipe',
-    name = remote.smart,
-    enabled = false,
-    ingredients = {
-      {remote.bombardment, 3}
-    },
-    result = remote.smart
+    type = 'shortcut',
+    name = 'give-'..remote.smart,
+    action = 'spawn-item',
+    technology_to_unlock = remote.smart,
+    item_to_spawn = remote.smart,
+    icon = '__eternal-winter__/graphics/icons/artillery-smart-remote.png',
+    icon_size = 32,
+    small_icon = '__eternal-winter__/graphics/icons/artillery-smart-remote.png',
+    small_icon_size = 32,
   },
   -- Technology
   {
@@ -121,7 +144,7 @@ data:extend({
         shift = {49, 49},
       },
     },
-    effects = { { type = 'unlock-recipe', recipe = remote.smart } },
+    effects = { },
     order = 'e-h',
     prerequisites = { remote.bombardment },
     unit = {
@@ -151,26 +174,24 @@ data:extend({
         icon_size = 32
       }
     },
-    flags = {},
+    flags = { 'mod-openable', 'only-in-cursor', 'not-stackable', 'spawnable' },
     stack_size = 1,
-    stackable = false,
-    selection_color = {r = 1, g = 0.28, b = 0, a = 1},
-    alt_selection_color = {r = 0, g = 0, b = 1, a = 1},
-    selection_mode = {'same-force'},
-    alt_selection_mode = {'enemy'},
-    selection_cursor_box_type = 'entity',
-    alt_selection_cursor_box_type = 'entity',
-    entity_filters = {'artillery-turret', 'artillery-wagon'}
+    select = exploration_mode({'same-force'}, selection_color),
+    alt_select = exploration_mode({'enemy'}, alt_selection_color),
+    reverse_select = exploration_mode({'same-force'}, selection_color),
+    alt_reverse_select = exploration_mode({'enemy'}, alt_selection_color),
   },
-  -- Recipe
+  -- Shortcut
   {
-    type = 'recipe',
-    name = remote.exploration,
-    enabled = false,
-    ingredients = {
-      {remote.smart, 2}
-    },
-    result = remote.exploration
+    type = 'shortcut',
+    name = 'give-'..remote.exploration,
+    action = 'spawn-item',
+    technology_to_unlock = remote.exploration,
+    item_to_spawn = remote.exploration,
+    icon = '__eternal-winter__/graphics/icons/artillery-exploration-remote.png',
+    icon_size = 32,
+    small_icon = '__eternal-winter__/graphics/icons/artillery-exploration-remote.png',
+    small_icon_size = 32,
   },
   -- Technology
   {
@@ -190,7 +211,7 @@ data:extend({
         shift = {49, 49},
       },
     },
-    effects = { { type = 'unlock-recipe', recipe = remote.exploration } },
+    effects = { },
     order = 'e-i',
     prerequisites = { remote.smart },
     unit = {

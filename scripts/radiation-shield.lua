@@ -32,24 +32,21 @@ local function shielding_shape(area)
 end
 
 local function replace_entity(old)
-  local name = whitelist[old.name]
-  local position = old.position
-  local surface = old.surface
-  local direction = old.direction
-  local force = old.force
-  local player = old.last_user
-  local damage = old.prototype.max_health - old.health
-
-  old.destroy()
-  local new = surface.create_entity{
-    name = name,
-    position = position,
-    direction = direction,
-    force = force,
-    player = player,
+  local def = {
+    name = whitelist[old.name],
+    position = old.position,
+    direction = old.direction,
+    force = old.force,
+    quality = old.quality,
+    player = old.last_user,
     create_build_effect_smoke = false,
     raise_built = false,
   }
+  local surface = old.surface
+  local damage = old.prototype.get_max_health(old.quality) - old.health
+
+  old.destroy()
+  local new = surface.create_entity(def)
 
   if not (new and new.valid) then
     return
@@ -101,7 +98,7 @@ local function on_entity_built(event)
       if player and player.valid then
         player.create_local_flying_text{ text = {'gui-shielding.exposed_machine', 'entity-name.'..entity.name}, position = entity.position }
       end
-      Buckets.add(global.radiation_targets, entity.unit_number, {
+      Buckets.add(storage.radiation_targets, entity.unit_number, {
         entity = entity,
         tick = game.tick,
       })
@@ -109,7 +106,7 @@ local function on_entity_built(event)
   end
 end
 
-local function on_entity_destroyed(event)
+local function on_object_destroyed(event)
   local entity = event.entity
   local surface = entity.surface
 
@@ -134,9 +131,9 @@ local function on_entity_destroyed(event)
     force = entity.force,
   }) do
     local id = machine.unit_number
-    if not Buckets.get(global.radiation_targets, id) then
+    if not Buckets.get(storage.radiation_targets, id) then
       if not validate_entity(machine) then
-        Buckets.add(global.radiation_targets, id, {
+        Buckets.add(storage.radiation_targets, id, {
           entity = machine,
           tick = game.tick,
         })
@@ -147,7 +144,7 @@ end
 
 local function on_tick(event)
   local tick = event.tick
-  for unit_number, rt_data in pairs(Buckets.get_bucket(global.radiation_targets, event.tick)) do
+  for unit_number, rt_data in pairs(Buckets.get_bucket(storage.radiation_targets, event.tick)) do
     local entity = rt_data.entity
     if entity.valid and not validate_entity(entity) then
       if tick >= (rt_data.tick + flame_lifetime) then
@@ -155,7 +152,7 @@ local function on_tick(event)
         rt_data.tick = event.tick
       end
     else
-      Buckets.remove(global.radiation_targets, unit_number)
+      Buckets.remove(storage.radiation_targets, unit_number)
     end
   end
 end
@@ -169,18 +166,18 @@ Shielding.events = {
   [defines.events.script_raised_built] = on_entity_built,
   [defines.events.script_raised_revive] = on_entity_built,
   -- Destroy
-  [defines.events.on_entity_died] = on_entity_destroyed,
-  [defines.events.script_raised_destroy] = on_entity_destroyed,
-  [defines.events.on_player_mined_entity] = on_entity_destroyed,
-  [defines.events.on_robot_mined_entity] = on_entity_destroyed,
+  [defines.events.on_entity_died] = on_object_destroyed,
+  [defines.events.script_raised_destroy] = on_object_destroyed,
+  [defines.events.on_player_mined_entity] = on_object_destroyed,
+  [defines.events.on_robot_mined_entity] = on_object_destroyed,
 }
 
 function Shielding.on_init()
-  global.radiation_targets = global.radiation_targets or Buckets.new(flame_lifetime)
+  storage.radiation_targets = storage.radiation_targets or Buckets.new(flame_lifetime)
 end
 
 function Shielding.on_configuration_changed()
-  global.radiation_targets = global.radiation_targets or Buckets.new(flame_lifetime)
+  storage.radiation_targets = storage.radiation_targets or Buckets.new(flame_lifetime)
 end
 
 return Shielding

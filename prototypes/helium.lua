@@ -1,4 +1,3 @@
-local ew_util = require '__eternal-winter__.prototypes.ew-util'
 local se_path = '__space-exploration-graphics__/graphics/icons/'
 
 data:extend({
@@ -9,7 +8,7 @@ data:extend({
     default_temperature = -269,
     max_temperature = 1000,
     gas_temperature = -268,
-    heat_capacity = '0.25KJ',
+    heat_capacity = '0.25kJ',
     icon = se_path .. 'fluid/ion-stream.png',
     icon_size = 64,
     icon_mipmaps = 1,
@@ -42,6 +41,7 @@ data:extend({
     enabled = false,
     hidden = false,
     hide_from_player_crafting = false,
+    allow_productivity = true,
   },
   {
     name = 'll-helium-cooling',
@@ -101,5 +101,3 @@ data:extend({
     },
   },
 })
-
-ew_util.allow_productivity('ll-helium')
