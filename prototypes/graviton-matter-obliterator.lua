@@ -132,8 +132,8 @@ data:extend({
     enabled = false,
     energy_required = 15,
     ingredients = {
-      { type = 'item', name = 'artillery-targeting-remote', amount = 1 },
-      { type = 'item', name = 'satellite', amount = 1 },
+      --{ type = 'item', name = 'artillery-targeting-remote', amount = 1 },
+      --{ type = 'item', name = 'satellite', amount = 1 },
       { type = 'item', name = 'artillery-turret', amount = 8 },
       { type = 'item', name = 'll-aluminium-plate', amount = 40 },
     },
