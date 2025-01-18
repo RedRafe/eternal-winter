@@ -152,7 +152,7 @@ local function apply_custom_effects()
     local force = game.forces[force_index]
     local recipes = force and force.valid and force.recipes
     local lvl = data.level
-    if recipes and lvl > 0 do
+    if recipes and lvl > 0 then
       for l = lvl, 0, -1 do
         recipes[recipe_name(l)].enabled = true
       end
