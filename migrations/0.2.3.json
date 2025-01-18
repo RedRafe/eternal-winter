@@ -1,0 +1,10 @@
+{
+  "recipe":
+  [
+    ["ll-moon-rock-processing-with-oxygen-1", "ll-moon-rock-processing-1"],
+    ["ll-moon-rock-processing-with-oxygen-2", "ll-moon-rock-processing-2"],
+    ["ll-moon-rock-processing-with-oxygen-3", "ll-moon-rock-processing-3"],
+    ["ll-moon-rock-processing-with-oxygen-4", "ll-moon-rock-processing-4"],
+    ["ll-moon-rock-processing-with-oxygen-5", "ll-moon-rock-processing-5"]
+  ]
+}

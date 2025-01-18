@@ -270,14 +270,14 @@ data:extend({
 })
 
 for i = 1, 5 do
-  local recipe = table.deepcopy(data.raw.recipe['ll-moon-rock-processing-with-oxygen'])
+  local recipe = table.deepcopy(data.raw.recipe['ll-moon-rock-processing'])
   recipe.name = recipe.name .. '-' .. tostring(i)
-  --recipe.localised_name = {'recipe-name.ll-moon-rock-processing-with-oxygen-tiered', i}
+  recipe.localised_name = {'recipe-name.ll-moon-rock-processing'}
   recipe.order = recipe.order .. '-[' .. tostring(i) .. ']'
   recipe.results = {
     { type = 'item', name = 'll-silica', amount = 5 },
     { type = 'item', name = 'stone', amount = 5 },
-    { type = 'fluid', name = 'll-oxygen', amount = 100 + (i * 40), fluidbox_index = 1 },
+    { type = 'fluid', name = 'll-oxygen', amount = 5 + (i * 5), fluidbox_index = 1 },
   }
   recipe.allow_productivity = true
   data:extend({ recipe })

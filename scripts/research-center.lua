@@ -10,6 +10,10 @@ local function new_force()
   return { crafts = 0, target = RC_LEVELS[1], level = 0 }
 end
 
+local function recipe_name(level)
+  return 'll-moon-rock-processing-'..tostring(level)
+end
+
 local function build_gui(player)
   local anchor = {gui = defines.relative_gui_type.assembling_machine_gui, position = defines.relative_gui_position.right, name = 'll-research-center'}
 
@@ -97,6 +101,7 @@ local function update_entity(entity)
       end
     end
     entity.force.play_sound{path = 'utility/new_objective', volume_modifier = 0.8}
+    entity.force.recipes[recipe_name(data.level)].enabled = true
   end
 
   -- Disable & remove completed researches to not loop their research servers anymore or use them as void resource
@@ -142,11 +147,25 @@ local function on_tick(event)
   end
 end
 
+local function apply_custom_effects()
+  for force_index, data in pairs(storage.research_center_forces) do
+    local force = game.forces[force_index]
+    local recipes = force and force.valid and force.recipes
+    local lvl = data.level
+    if recipes and lvl > 0 do
+      for l = lvl, 0, -1 do
+        recipes[recipe_name(l)].enabled = true
+      end
+    end
+  end
+end
+
 ResearchCenter.events = {
   [defines.events.on_tick] = on_tick,
   [defines.events.on_gui_opened] = on_gui_opened,
   [defines.events.on_script_trigger_effect] = on_script_trigger_effect,
   [defines.events.on_object_destroyed] = on_object_destroyed,
+  [defines.events.on_technology_effects_reset] = apply_custom_effects,
 }
 
 function ResearchCenter.on_init()
